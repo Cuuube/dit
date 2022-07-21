@@ -5,6 +5,8 @@ import "github.com/Cuuube/dit/internal/cmdio"
 func RunCmd(cmd string) {
 	sysTool := NewSystemTool()
 	switch cmd {
+	case "":
+		fallthrough
 	case "overview":
 		cmdio.PrintStruct(sysTool.Overview())
 	default:

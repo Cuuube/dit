@@ -17,3 +17,14 @@ func SplitToDict(raw string, KVSplitChar string) map[string]string {
 	}
 	return ret
 }
+
+func SplitToTable(raw string, KVSplitChar string) [][]string {
+	ret := [][]string{}
+	lines := strings.Split(raw, "\n")
+	for _, line := range lines {
+		clips := strings.Split(line, KVSplitChar)
+		ret = append(ret, clips)
+	}
+
+	return ret
+}

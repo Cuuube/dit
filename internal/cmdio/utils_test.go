@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestParseStrToDict(t *testing.T) {
+func TestSplitToDict(t *testing.T) {
 	example1 := `aaaaaa
 	ProductName:	macOS
 	ProductVersion:	12.4`
@@ -27,6 +27,25 @@ func TestParseStrToDict(t *testing.T) {
 	result2 := SplitToDict(example2, "=")
 	fmt.Printf("%+v\n", result2)
 	if result2["PRETTY_NAME"] != "Debian GNU/Linux 9 (stretch)" {
+		t.Fail()
+	}
+}
+
+func TestSplitToTable(t *testing.T) {
+	example1 := `Filesystem	Size	Used	Avail	Use%	Mounted on
+udev	32G	0	32G	0%	/dev
+tmpfs	6.3G	755M	5.6G	12%	/run
+/dev/sda1	86G	69G	13G	85%	/`
+	result := SplitToTable(example1, "\t")
+	fmt.Printf("%+v\n", result)
+
+	if len(result) != 4 {
+		t.Fail()
+	}
+	if result[0][0] != "Filesystem" {
+		t.Fail()
+	}
+	if result[3][4] != "85%" {
 		t.Fail()
 	}
 }

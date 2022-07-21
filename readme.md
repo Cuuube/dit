@@ -7,6 +7,7 @@ make
 
 运行：
 ```bash
-./bin/dit -module sys -cmd overview
+./bin/dit sys overview
+// ./bin/dit <module> <cmd>
 ```
 

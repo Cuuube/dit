@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/Cuuube/dit/internal/cmdio"
+	"github.com/Cuuube/dit/tool/disk"
 	"github.com/Cuuube/dit/tool/system"
 )
 
@@ -24,11 +25,11 @@ func main() {
 	loadArgsByFlags()
 	loadArgsByArgs()
 
-	cmdio.Println(module, cmd)
-
 	switch module {
 	case "sys":
 		system.RunCmd(cmd)
+	case "disk":
+		disk.RunCmd(cmd)
 	default:
 		cmdio.Println("暂不支持模块：", module)
 	}
@@ -56,7 +57,7 @@ func loadArgsByArgs() {
 	if module == "" {
 		module = os.Args[1]
 	}
-	if cmd == "" {
+	if cmd == "" && len(os.Args) > 2 {
 		cmd = os.Args[2]
 	}
 }
