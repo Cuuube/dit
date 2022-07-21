@@ -1,8 +1,6 @@
 package system
 
 import (
-	"strings"
-
 	"github.com/Cuuube/dit/internal/cmdio"
 )
 
@@ -17,21 +15,27 @@ func (sysTool *MacOSSystemTool) Overview() SystemOverview {
 	overview := sysTool.BaseSystemTool.Overview()
 
 	sysTool.fillSysInfo(&overview)
+	sysTool.fillCompInfo(&overview)
 
 	return overview
 }
 
-// 查看系统详细版本
+// fillSysInfo 增加系统信息
 func (sysTool *MacOSSystemTool) fillSysInfo(info *SystemOverview) {
-	out, err := cmdio.Exec("sw_vers")
+	// out, err := cmdio.Exec("sw_vers")
+	out, err := cmdio.Exec("system_profiler", "SPSoftwareDataType")
+
 	if err != nil {
 		return
 	}
 
-	// 小写化
-	out = strings.ToLower(out)
+	kvs := cmdio.SplitToDict(out, ":")
+	info.Sys = kvs["System Version"]
+	info.Kernel = kvs["Kernel Version"]
+}
 
-	kvs := cmdio.ParseStrToDict(out)
-	info.SysName = kvs["productname"]
-	info.SysVer = kvs["productversion"]
+// fillCompInfo 增加电脑信息
+func (sysTool *MacOSSystemTool) fillCompInfo(info *SystemOverview) {
+	info.Hostname = cmdio.ExecIgnoreErr("hostname")
+	info.User = cmdio.ExecIgnoreErr("whoami")
 }

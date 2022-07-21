@@ -2,10 +2,12 @@ package system
 
 // SystemOverview 系统概览结构体
 type SystemOverview struct {
-	Goos    string // 操作系统内核
-	Arch    string // 系统架构
-	SysName string // 系统版本名
-	SysVer  string // 系统版本号
+	Goos     string // 操作系统内核
+	Arch     string // 系统架构
+	Sys      string // 系统版本名+版本号+版本类型
+	Kernel   string // 内核+版本
+	Hostname string // 机器名
+	User     string // 当前用户
 }
 
 // SystemTool 系统工具
