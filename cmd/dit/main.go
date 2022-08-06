@@ -5,6 +5,7 @@ import (
 
 	"github.com/Cuuube/dit/internal/cmdio"
 	"github.com/Cuuube/dit/tool/disk"
+	"github.com/Cuuube/dit/tool/file"
 	"github.com/Cuuube/dit/tool/system"
 )
 
@@ -30,6 +31,8 @@ func main() {
 		system.RunCmd(cmd, otherArgs...)
 	case "disk":
 		disk.RunCmd(cmd, otherArgs...)
+	case "file":
+		file.RunCmd(cmd, otherArgs...)
 	default:
 		cmdio.Println("暂不支持模块：", module)
 	}

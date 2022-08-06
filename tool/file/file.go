@@ -1,14 +1,14 @@
-package disk
+package file
 
 import "github.com/Cuuube/dit/internal/cmdio"
 
 func RunCmd(cmd string, args ...string) {
-	diskTool := NewDiskTool()
+	tool := NewFileTool()
 	switch cmd {
-	case "":
+	case "mv":
 		fallthrough
-	case "overview":
-		diskTool.Overview()
+	case "move":
+		tool.Move(args...)
 	default:
 		cmdio.Println("暂不支持命令：", cmd)
 	}
