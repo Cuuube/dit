@@ -1,7 +1,6 @@
 package main
 
 import (
-	"flag"
 	"os"
 
 	"github.com/Cuuube/dit/internal/cmdio"
@@ -10,54 +9,58 @@ import (
 )
 
 var (
-	moduleArg       *string = flag.String("module", "", "Use -module <module>")
-	simpleModuleArg *string = flag.String("m", "", "Use -m <module>")
-	cmdArg          *string = flag.String("cmd", "", "Use -cmd <cmd>")
-	simpleCmdArg    *string = flag.String("c", "", "Use -c <cmd>")
+	// moduleArg       *string = flag.String("module", "", "Use -module <module>")
+	// simpleModuleArg *string = flag.String("m", "", "Use -m <module>")
+	// cmdArg          *string = flag.String("cmd", "", "Use -cmd <cmd>")
+	// simpleCmdArg    *string = flag.String("c", "", "Use -c <cmd>")
 
 	// real args
-	module string
-	cmd    string
+	module    string
+	cmd       string
+	otherArgs []string
 )
 
 func main() {
 	// load args
-	loadArgsByFlags()
+	// loadArgsByFlags()
 	loadArgsByArgs()
 
 	switch module {
 	case "sys":
-		system.RunCmd(cmd)
+		system.RunCmd(cmd, otherArgs...)
 	case "disk":
-		disk.RunCmd(cmd)
+		disk.RunCmd(cmd, otherArgs...)
 	default:
 		cmdio.Println("暂不支持模块：", module)
 	}
 }
 
-// 根据flag包加载参数
-func loadArgsByFlags() {
-	flag.Parse()
+// // 根据flag包加载参数
+// func loadArgsByFlags() {
+// 	flag.Parse()
 
-	if moduleArg != nil && *moduleArg != "" {
-		module = *moduleArg
-	} else if simpleModuleArg != nil && *simpleModuleArg != "" {
-		module = *simpleModuleArg
-	}
-	if cmdArg != nil && *cmdArg != "" {
-		cmd = *cmdArg
-	} else if simpleCmdArg != nil && *simpleCmdArg != "" {
-		cmd = *simpleCmdArg
-	}
-}
+// 	if moduleArg != nil && *moduleArg != "" {
+// 		module = *moduleArg
+// 	} else if simpleModuleArg != nil && *simpleModuleArg != "" {
+// 		module = *simpleModuleArg
+// 	}
+// 	if cmdArg != nil && *cmdArg != "" {
+// 		cmd = *cmdArg
+// 	} else if simpleCmdArg != nil && *simpleCmdArg != "" {
+// 		cmd = *simpleCmdArg
+// 	}
+// }
 
 // 根据参数顺序加载参数
 func loadArgsByArgs() {
-	// cmdio.Println(os.Args) // [./bin/dit -module sys -cmd overview]
+	// cmdio.Println(os.Args) // [./bin/dit sys overview]
 	if module == "" {
 		module = os.Args[1]
 	}
 	if cmd == "" && len(os.Args) > 2 {
 		cmd = os.Args[2]
+	}
+	if len(os.Args) > 3 {
+		otherArgs = os.Args[3:]
 	}
 }

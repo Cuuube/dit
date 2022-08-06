@@ -2,7 +2,7 @@ package system
 
 import "github.com/Cuuube/dit/internal/cmdio"
 
-func RunCmd(cmd string) {
+func RunCmd(cmd string, args ...string) {
 	sysTool := NewSystemTool()
 	switch cmd {
 	case "":

@@ -5,10 +5,11 @@ import "github.com/Cuuube/dit/internal/cmdio"
 var _ DiskTool = (*WinDiskTool)(nil)
 
 type WinDiskTool struct {
+	BaseDiskTool
 }
 
 // Overview 查看磁盘使用概览
-func (sysTool *WinDiskTool) Overview() {
+func (tool *WinDiskTool) Overview() {
 	out, _ := cmdio.Exec("df", "-h")
 	cmdio.Println(out)
 }
