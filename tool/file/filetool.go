@@ -2,6 +2,7 @@ package file
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/Cuuube/dit/internal/cmdio"
 	"github.com/Cuuube/dit/internal/fileutil"
@@ -53,7 +54,7 @@ func (tool *BaseFileTool) Move(args ...string) {
 		return
 	}
 
-	failedFlg := true
+	nameWillChangeMap := map[string]string{}
 	reg := regexp.MustCompile(src)
 	for _, file := range files {
 		fname := file.Name()
@@ -62,16 +63,29 @@ func (tool *BaseFileTool) Move(args ...string) {
 			continue
 		}
 		newName := reg.ReplaceAllString(fname, dst)
+		nameWillChangeMap[fname] = newName
+	}
+
+	if len(nameWillChangeMap) <= 0 {
+		cmdio.Println("匹配不到任何文件:", src)
+		return
+	}
+
+	cmdio.PrintDict(nameWillChangeMap, "源文件", "目标文件")
+	cmdio.Printf("需要更改%d个文件，是否继续？y/N\n", len(nameWillChangeMap))
+	if strings.ToLower(cmdio.Scan()) != "y" {
+		cmdio.Println("操作终止")
+		return
+	}
+
+	// 执行
+	for fname, newName := range nameWillChangeMap {
 		err := fileutil.Move(fname, newName)
 		if err != nil {
 			cmdio.Printf("将【%s】修改为【%s】失败！\n", fname, newName)
 			continue
 		}
-		cmdio.Printf("将【%s】修改为【%s】\n", fname, newName)
-		failedFlg = false
+		cmdio.Printf("成功将【%s】修改为【%s】\n", fname, newName)
 	}
-
-	if failedFlg {
-		cmdio.Println("匹配不到任何文件:", src)
-	}
+	cmdio.Println("操作完成")
 }

@@ -30,9 +30,9 @@ func PrintTable(data [][]string) {
 }
 
 // 打印字典，作为二维表格输出
-func PrintDict(data map[string]any) {
+func PrintDict[T any](data map[string]T, keyColName, valColName string) {
 	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Key", "Value"})
+	table.SetHeader([]string{keyColName, valColName})
 
 	for k, v := range data {
 		table.Append([]string{k, fmt.Sprintf("%v", v)})
@@ -59,5 +59,5 @@ func PrintStruct(stru any) {
 	// }
 	byt, _ := json.Marshal(stru)
 	json.Unmarshal(byt, &kvDict)
-	PrintDict(kvDict)
+	PrintDict(kvDict, "key", "val")
 }

@@ -8,7 +8,7 @@ func TestPrintDict(t *testing.T) {
 		"arch":       "arm64",
 		"longstring": "aaaaaaaaaaaaaaa aaaaaaa",
 	}
-	PrintDict(data1)
+	PrintDict(data1, "KEY", "VALUE")
 }
 
 func TestPrintTable(t *testing.T) {
