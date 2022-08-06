@@ -32,8 +32,8 @@ func WriteFile(path string, bytes []byte) error {
 	return ioutil.WriteFile(path, bytes, 0777)
 }
 
-// 重命名
-func Rename(src, dst string) error {
+// 移动/重命名
+func Move(src, dst string) error {
 	return os.Rename(src, dst)
 }
 

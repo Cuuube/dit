@@ -11,7 +11,7 @@ import (
 // DiskTool 系统工具
 type DiskTool interface {
 	Overview()
-	Rename(args ...string)
+	Move(args ...string)
 }
 
 // NewDiskTool 根据环境创建系统工具
@@ -39,8 +39,8 @@ func (tool *BaseDiskTool) Overview() {
 	cmdio.Println(out)
 }
 
-// Rename 文件重命名
-func (tool *BaseDiskTool) Rename(args ...string) {
+// Move 文件移动/重命名
+func (tool *BaseDiskTool) Move(args ...string) {
 	if len(args) < 2 {
 		cmdio.Println("参数错误!")
 		return
@@ -50,7 +50,7 @@ func (tool *BaseDiskTool) Rename(args ...string) {
 
 	if fileutil.IsExist(src) {
 		// 更改名称为dst
-		fileutil.Rename(src, dst)
+		fileutil.Move(src, dst)
 		return
 	}
 
@@ -61,6 +61,7 @@ func (tool *BaseDiskTool) Rename(args ...string) {
 		return
 	}
 
+	failedFlg := true
 	reg := regexp.MustCompile(src)
 	for _, file := range files {
 		fname := file.Name()
@@ -69,13 +70,16 @@ func (tool *BaseDiskTool) Rename(args ...string) {
 			continue
 		}
 		newName := reg.ReplaceAllString(fname, dst)
-		err := fileutil.Rename(fname, newName)
+		err := fileutil.Move(fname, newName)
 		if err != nil {
 			cmdio.Printf("将【%s】修改为【%s】失败！\n", fname, newName)
 			continue
 		}
 		cmdio.Printf("将【%s】修改为【%s】\n", fname, newName)
+		failedFlg = false
 	}
 
-	cmdio.Println("匹配不到任何文件:", src)
+	if failedFlg {
+		cmdio.Println("匹配不到任何文件:", src)
+	}
 }

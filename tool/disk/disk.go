@@ -9,8 +9,10 @@ func RunCmd(cmd string, args ...string) {
 		fallthrough
 	case "overview":
 		diskTool.Overview()
-	case "rename":
-		diskTool.Rename(args...)
+	case "mv":
+		fallthrough
+	case "move":
+		diskTool.Move(args...)
 	default:
 		cmdio.Println("暂不支持命令：", cmd)
 	}
