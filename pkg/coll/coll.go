@@ -3,6 +3,10 @@ package coll
 
 import "reflect"
 
+type MapKeyType interface {
+	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64 | float32 | float64 | string | bool | uintptr
+}
+
 // Contains 检查是否在列表中
 func Contains[argType any](args []argType, target argType) bool {
 	for i := range args {
@@ -25,6 +29,26 @@ func Map[argType any, retType any](args []argType, exec func(int, argType) retTy
 	ret := make([]retType, len(args))
 	for i := range args {
 		ret[i] = exec(i, args[i])
+	}
+	return ret
+}
+
+// Map 高级函数：KV映射
+func MapDict[keyType MapKeyType, valueType any, retType any](args map[keyType]valueType, exec func(keyType, valueType) retType) []retType {
+	ret := make([]retType, len(args))
+	i := 0
+	for k := range args {
+		ret[i] = exec(k, args[k])
+		i++
+	}
+	return ret
+}
+
+// Map 高级函数：KV映射
+func MapKV[keyType MapKeyType, valueType any, retType any](args map[keyType]valueType, exec func(keyType, valueType) retType) map[keyType]retType {
+	ret := map[keyType]retType{}
+	for k := range args {
+		ret[k] = exec(k, args[k])
 	}
 	return ret
 }
