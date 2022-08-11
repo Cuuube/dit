@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/Cuuube/dit/internal/cmdio"
+	"github.com/Cuuube/dit/pkg/cmdio"
 	"github.com/Cuuube/dit/tool/disk"
 	"github.com/Cuuube/dit/tool/file"
 	"github.com/Cuuube/dit/tool/system"

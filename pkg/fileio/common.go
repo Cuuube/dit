@@ -1,10 +1,10 @@
-package fileutil
+package fileio
 
 import (
 	"io/ioutil"
 	"os"
 
-	"github.com/Cuuube/dit/internal/cmdio"
+	"github.com/Cuuube/dit/pkg/cmdio"
 )
 
 // 打印目录列表

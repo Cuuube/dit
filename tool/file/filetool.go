@@ -4,8 +4,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/Cuuube/dit/internal/cmdio"
-	"github.com/Cuuube/dit/internal/fileutil"
+	"github.com/Cuuube/dit/pkg/cmdio"
+	"github.com/Cuuube/dit/pkg/fileio"
 )
 
 // FileTool 系统工具
@@ -41,14 +41,14 @@ func (tool *BaseFileTool) Move(args ...string) {
 	src := args[0]
 	dst := args[1]
 
-	if fileutil.IsExist(src) {
+	if fileio.IsExist(src) {
 		// 更改名称为dst
-		fileutil.Move(src, dst)
+		fileio.Move(src, dst)
 		return
 	}
 
 	// 将src视为正则
-	files, err := fileutil.ListDir(fileutil.Pwd())
+	files, err := fileio.ListDir(fileio.Pwd())
 	if err != nil {
 		cmdio.Println("读取当前文件失败:", err)
 		return
@@ -80,7 +80,7 @@ func (tool *BaseFileTool) Move(args ...string) {
 
 	// 执行
 	for fname, newName := range nameWillChangeMap {
-		err := fileutil.Move(fname, newName)
+		err := fileio.Move(fname, newName)
 		if err != nil {
 			cmdio.Printf("将【%s】修改为【%s】失败！\n", fname, newName)
 			continue

@@ -1,7 +1,7 @@
 package system
 
 import (
-	"github.com/Cuuube/dit/internal/cmdio"
+	"github.com/Cuuube/dit/pkg/cmdio"
 )
 
 var _ SystemTool = (*MacOSSystemTool)(nil)

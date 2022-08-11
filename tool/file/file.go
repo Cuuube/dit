@@ -1,6 +1,6 @@
 package file
 
-import "github.com/Cuuube/dit/internal/cmdio"
+import "github.com/Cuuube/dit/pkg/cmdio"
 
 func RunCmd(cmd string, args ...string) {
 	tool := NewFileTool()

@@ -3,7 +3,7 @@ package system
 import (
 	"strings"
 
-	"github.com/Cuuube/dit/internal/cmdio"
+	"github.com/Cuuube/dit/pkg/cmdio"
 )
 
 var _ SystemTool = (*LinuxSystemTool)(nil)

@@ -1,7 +1,7 @@
 package disk
 
 import (
-	"github.com/Cuuube/dit/internal/cmdio"
+	"github.com/Cuuube/dit/pkg/cmdio"
 	"github.com/Cuuube/dit/tool/system"
 )
 

@@ -1,6 +1,6 @@
 package disk
 
-import "github.com/Cuuube/dit/internal/cmdio"
+import "github.com/Cuuube/dit/pkg/cmdio"
 
 var _ DiskTool = (*WinDiskTool)(nil)
 
