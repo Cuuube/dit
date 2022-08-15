@@ -35,6 +35,10 @@ func TestDiffDict(t *testing.T) {
 	// dl, dr, ol, or, err
 	ol, or := DiffDict(d1, d2, "")
 	fmt.Printf("leftOnly: %+v\nrightOnly: %+v\nerr:%v\n", ol, or, nil)
+
+	// fmt.Println("=======test2:=======")
+	// ol, or = DiffDict(map[int]any{1: "123", 2: map[int]any{1: "123", 2: "789"}, 3: 4}, map[int]any{1: "123", 2: map[int]any{1: "123", 2: "222"}, 3: 3}, "")
+	// fmt.Printf("leftOnly: %+v\nrightOnly: %+v\nerr:%v\n", ol, or, nil)
 }
 
 func TestDiffJSONMap(t *testing.T) {
@@ -78,12 +82,15 @@ func TestDiffValue(t *testing.T) {
 	ol, or := DiffValue(1, "true", "")
 	fmt.Printf("leftOnly: %+v\nrightOnly: %+v\nerr:%v\n", ol, or, nil)
 
+	fmt.Println("=======test2:=======")
 	ol, or = DiffValue(map[string]any{"a": 123, "b": 456, "c": 7}, map[string]any{"a": 456, "b": 456}, "")
 	fmt.Printf("leftOnly: %+v\nrightOnly: %+v\nerr:%v\n", ol, or, nil)
 
+	fmt.Println("=======test3:=======")
 	ol, or = DiffValue(map[string]any{"a": 123, "b": 456, "c": nil}, map[string]any{"a": 456, "b": 456}, "")
 	fmt.Printf("leftOnly: %+v\nrightOnly: %+v\nerr:%v\n", ol, or, nil)
 
+	fmt.Println("=======test4:=======")
 	ol, or = DiffValue(nil, map[string]any{"a": 456, "b": 456}, "")
 	fmt.Printf("leftOnly: %+v\nrightOnly: %+v\nerr:%v\n", ol, or, nil)
 }
