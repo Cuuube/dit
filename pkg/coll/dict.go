@@ -1,6 +1,10 @@
 package coll
 
-type Dict[keyType int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64 | float32 | float64 | string | bool | uintptr, valType any] map[keyType]valType
+type DictKeyable interface {
+	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64 | float32 | float64 | string | bool | uintptr
+}
+
+type Dict[keyType DictKeyable, valType any] map[keyType]valType
 
 func (dict *Dict[keyType, valType]) Get(k keyType) valType {
 	return (*dict)[k]
