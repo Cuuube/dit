@@ -1,11 +1,12 @@
 package fileio
 
 import (
+	"path"
 	"strings"
 )
 
-const defaultContentType = "text/plain"
-const downloadContentType = "application/octet-stream"
+const DefaultContentType = "text/plain"
+const DownloadContentType = "application/octet-stream"
 
 var contentTypeMap = map[string]string{
 	// 图片
@@ -36,9 +37,10 @@ var contentTypeMap = map[string]string{
 
 // SplitPathAndExt 切分路径和最终文件名
 func SplitPathAndExt(src string) (string, string) {
-	clips := strings.Split(src, "/")
-	len := len(clips)
-	return strings.Join(clips[0:len-1], "/"), clips[len-1]
+	// clips := strings.Split(src, "/")
+	// len := len(clips)
+	// return strings.Join(clips[0:len-1], "/"), clips[len-1]
+	return path.Split(src)
 }
 
 // SplitNameAndExt 切分文件名和拓展名
@@ -70,13 +72,10 @@ func GetContentTypeByExt(ext string) string {
 	if found {
 		return contentType
 	}
-	return defaultContentType
+	return DefaultContentType
 }
 
 // IsStartWithRelativePath 判断是否是相对路径
-func IsStartWithRelativePath(path string) bool {
-	if strings.Index(path, "./") == 0 || strings.Index(path, "../") == 0 {
-		return true
-	}
-	return false
+func IsStartWithRelativePath(p string) bool {
+	return !path.IsAbs(p)
 }

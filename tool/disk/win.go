@@ -1,6 +1,6 @@
 package disk
 
-import "github.com/Cuuube/dit/pkg/cmdio"
+import "github.com/Cuuube/dit/pkg/cli"
 
 var _ DiskTool = (*WinDiskTool)(nil)
 
@@ -10,6 +10,6 @@ type WinDiskTool struct {
 
 // Overview 查看磁盘使用概览
 func (tool *WinDiskTool) Overview() {
-	out, _ := cmdio.Exec("df", "-h")
-	cmdio.Println(out)
+	out, _ := cli.Exec("df", "-h")
+	cli.Println(out)
 }

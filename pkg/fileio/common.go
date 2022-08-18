@@ -3,8 +3,9 @@ package fileio
 import (
 	"io/ioutil"
 	"os"
+	"path"
 
-	"github.com/Cuuube/dit/pkg/cmdio"
+	"github.com/Cuuube/dit/pkg/cli"
 )
 
 // 打印目录列表
@@ -37,11 +38,51 @@ func Move(src, dst string) error {
 	return os.Rename(src, dst)
 }
 
+// 复制文件或文件夹
+func Copy(src, dst string) error {
+	src = AbsPath(src)
+	dst = AbsPath(dst)
+
+	sStat, err := GetStat(src)
+	if err != nil {
+		return err
+	}
+	// 文件的处理
+	if !sStat.IsDir() {
+		sContent, err := os.ReadFile(src)
+		if err != nil {
+			return err
+		}
+		return os.WriteFile(dst, sContent, sStat.Mode())
+	}
+
+	// 文件夹的处理：/rootpath/abc -> xyz
+	// rootpath, dirname := path.Split(src)
+	err = MkDir(dst)
+	if err != nil {
+		return err
+	}
+	// 递归copy
+	files, err := os.ReadDir(src)
+	if err != nil {
+		return err
+	}
+	for _, fileStat := range files {
+		subsrc := JoinPath(src, fileStat.Name())
+		subdst := JoinPath(dst, fileStat.Name())
+		err = Copy(subsrc, subdst)
+		if err != nil {
+			cli.Printf("文件复制失败:[%s], 原因：%s\n", subsrc, err)
+		}
+	}
+	return nil
+}
+
 // 返回当前程序执行目录
 func Pwd() string {
 	wd, err := os.Getwd()
 	if err != nil {
-		cmdio.Println("pwd执行出错：", err.Error())
+		cli.Println("pwd执行出错：", err.Error())
 	}
 	return wd
 }
@@ -49,8 +90,18 @@ func Pwd() string {
 // 路径是否存在
 func IsExist(src string) bool {
 	_, err := GetStat(src)
-	if err != nil {
-		return false
+	return err == nil
+}
+
+// 转换为绝对路径
+func AbsPath(p string) string {
+	if path.IsAbs(p) {
+		return p
 	}
-	return true
+	return JoinPath(Pwd(), p)
+}
+
+// 连接path
+func JoinPath(p ...string) string {
+	return path.Join(p...)
 }

@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/Cuuube/dit/pkg/cmdio"
+	"github.com/Cuuube/dit/pkg/cli"
 	"github.com/Cuuube/dit/tool/disk"
 	"github.com/Cuuube/dit/tool/file"
 	"github.com/Cuuube/dit/tool/system"
@@ -33,8 +33,14 @@ func main() {
 		disk.RunCmd(cmd, otherArgs...)
 	case "file":
 		file.RunCmd(cmd, otherArgs...)
+
+	// 特殊简化版alias
+	case "get":
+		file.RunCmd("fetch", os.Args[2:]...)
+	case "fetch":
+		file.RunCmd("fetch", os.Args[2:]...)
 	default:
-		cmdio.Println("暂不支持模块：", module)
+		cli.Println("暂不支持模块：", module)
 	}
 }
 
@@ -56,7 +62,7 @@ func main() {
 
 // 根据参数顺序加载参数
 func loadArgsByArgs() {
-	// cmdio.Println(os.Args) // [./bin/dit sys overview]
+	// cli.Println(os.Args) // [./bin/dit sys overview]
 	if module == "" {
 		module = os.Args[1]
 	}

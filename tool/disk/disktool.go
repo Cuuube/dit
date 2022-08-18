@@ -1,7 +1,7 @@
 package disk
 
 import (
-	"github.com/Cuuube/dit/pkg/cmdio"
+	"github.com/Cuuube/dit/pkg/cli"
 	"github.com/Cuuube/dit/tool/system"
 )
 
@@ -31,6 +31,6 @@ type BaseDiskTool struct{}
 
 // Overview 查看磁盘使用概览
 func (tool *BaseDiskTool) Overview() {
-	out, _ := cmdio.Exec("df", "-h")
-	cmdio.Println(out)
+	out, _ := cli.Exec("df", "-h")
+	cli.Println(out)
 }

@@ -1,4 +1,4 @@
-package cmdio
+package cli
 
 import (
 	"os/exec"

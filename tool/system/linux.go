@@ -3,7 +3,7 @@ package system
 import (
 	"strings"
 
-	"github.com/Cuuube/dit/pkg/cmdio"
+	"github.com/Cuuube/dit/pkg/cli"
 )
 
 var _ SystemTool = (*LinuxSystemTool)(nil)
@@ -24,24 +24,24 @@ func (sysTool *LinuxSystemTool) Overview() SystemOverview {
 
 // fillSysInfo 增加系统信息
 func (sysTool *LinuxSystemTool) fillSysInfo(info *SystemOverview) {
-	out, err := cmdio.Exec("lsb_release", "-a")
+	out, err := cli.Exec("lsb_release", "-a")
 	if err != nil {
-		cmdio.Println(err.Error())
+		cli.Println(err.Error())
 		return
 	}
-	kvs := cmdio.SplitToDict(out, ":")
+	kvs := cli.SplitToDict(out, ":")
 	info.Sys = kvs["Description"]
-	info.Kernel = strings.Split(cmdio.ExecIgnoreErr("cat", "/proc/version"), "(")[0]
+	info.Kernel = strings.Split(cli.ExecIgnoreErr("cat", "/proc/version"), "(")[0]
 }
 
 // fillCompInfo 增加电脑信息
 func (sysTool *LinuxSystemTool) fillCompInfo(info *SystemOverview) {
-	info.Hostname = cmdio.ExecIgnoreErr("hostname")
-	info.User = cmdio.ExecIgnoreErr("whoami")
+	info.Hostname = cli.ExecIgnoreErr("hostname")
+	info.User = cli.ExecIgnoreErr("whoami")
 }
 
 // func (sysTool *LinuxSystemTool) fillSysInfo2(info *SystemOverview) {
-// 	out, err := cmdio.Exec("cat", "/etc/os-release")
+// 	out, err := cli.Exec("cat", "/etc/os-release")
 // 	/*
 // 		PRETTY_NAME="Debian GNU/Linux 9 (stretch)"
 // 		NAME="Debian GNU/Linux"
@@ -57,7 +57,7 @@ func (sysTool *LinuxSystemTool) fillCompInfo(info *SystemOverview) {
 // 	if err != nil {
 // 		return
 // 	}
-// 	kvs := cmdio.SplitToDict(out, "=")
+// 	kvs := cli.SplitToDict(out, "=")
 // 	info.SysName = kvs["NAME"]
 // 	info.SysVer = kvs["VERSION"]
 // }

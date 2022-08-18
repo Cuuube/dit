@@ -1,6 +1,6 @@
 package disk
 
-import "github.com/Cuuube/dit/pkg/cmdio"
+import "github.com/Cuuube/dit/pkg/cli"
 
 func RunCmd(cmd string, args ...string) {
 	diskTool := NewDiskTool()
@@ -10,6 +10,6 @@ func RunCmd(cmd string, args ...string) {
 	case "overview":
 		diskTool.Overview()
 	default:
-		cmdio.Println("暂不支持命令：", cmd)
+		cli.Println("暂不支持命令：", cmd)
 	}
 }

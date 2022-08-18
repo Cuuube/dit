@@ -8,6 +8,6 @@ type LinuxDiskTool struct {
 
 // // Overview 查看磁盘使用概览
 // func (tool *LinuxDiskTool) Overview() {
-// 	out, _ := cmdio.Exec("df", "-h")
-// 	cmdio.Println(out)
+// 	out, _ := cli.Exec("df", "-h")
+// 	cli.Println(out)
 // }

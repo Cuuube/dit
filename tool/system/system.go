@@ -1,6 +1,6 @@
 package system
 
-import "github.com/Cuuube/dit/pkg/cmdio"
+import "github.com/Cuuube/dit/pkg/cli"
 
 func RunCmd(cmd string, args ...string) {
 	sysTool := NewSystemTool()
@@ -8,8 +8,8 @@ func RunCmd(cmd string, args ...string) {
 	case "":
 		fallthrough
 	case "overview":
-		cmdio.PrintStruct(sysTool.Overview())
+		cli.PrintStruct(sysTool.Overview())
 	default:
-		cmdio.Println("暂不支持命令：", cmd)
+		cli.Println("暂不支持命令：", cmd)
 	}
 }

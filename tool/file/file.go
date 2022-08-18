@@ -1,6 +1,6 @@
 package file
 
-import "github.com/Cuuube/dit/pkg/cmdio"
+import "github.com/Cuuube/dit/pkg/cli"
 
 func RunCmd(cmd string, args ...string) {
 	tool := NewFileTool()
@@ -9,7 +9,15 @@ func RunCmd(cmd string, args ...string) {
 		fallthrough
 	case "move":
 		tool.Move(args...)
+	case "cp":
+		fallthrough
+	case "copy":
+		tool.Copy(args...)
+	case "get":
+		fallthrough
+	case "fetch":
+		tool.Fetch(args...)
 	default:
-		cmdio.Println("暂不支持命令：", cmd)
+		cli.Println("暂不支持命令：", cmd)
 	}
 }
