@@ -2,7 +2,9 @@ package ctrl
 
 import (
 	"fmt"
+	"runtime"
 	"testing"
+	"time"
 )
 
 type testStruct struct {
@@ -42,4 +44,30 @@ func TestTernary(t *testing.T) {
 func TestIfElse(t *testing.T) {
 	IfElse(1 < 2, func() { fmt.Println("1<2") }, func() { fmt.Println("1 not <2") })
 	IfElse(1 > 2, func() { fmt.Println("1>2") }, func() { fmt.Println("1 not >2") })
+}
+
+func TestAsyncExec(t *testing.T) {
+	// 循环打印goroutine数
+	fmt.Println(runtime.NumGoroutine())
+	go func() {
+		t := time.NewTicker(time.Second)
+		for range t.C {
+			fmt.Println(runtime.NumGoroutine())
+		}
+	}()
+	fmt.Println(runtime.NumGoroutine())
+
+	execs := make([]func() error, 0)
+	for i := 0; i < 100; i++ {
+		idx := i
+		execs = append(execs, func() error {
+			time.Sleep(time.Millisecond * 100 * time.Duration(idx))
+			return fmt.Errorf("err: %d", idx)
+		})
+	}
+	// AsyncExec(7, func() error {
+	// 	time.Sleep(time.Millisecond * 100)
+	// })
+	errs := AsyncExec(17, execs...)
+	fmt.Println(errs)
 }

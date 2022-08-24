@@ -2,7 +2,7 @@ package mathletics
 
 var _ IMatrix[int] = (*Matrix[int])(nil)
 
-func NewMatrix[T Number](data [][]T) Matrix[T] {
+func NewMatrix[T RawNumber](data [][]T) Matrix[T] {
 	return Matrix[T]{
 		data: data,
 		cols: len(data[0]),
@@ -10,7 +10,7 @@ func NewMatrix[T Number](data [][]T) Matrix[T] {
 	}
 }
 
-func NewMatrixFromRows[T Number](data ...[]T) Matrix[T] {
+func NewMatrixFromRows[T RawNumber](data ...[]T) Matrix[T] {
 	return Matrix[T]{
 		data: data,
 		cols: len(data[0]),
@@ -19,7 +19,7 @@ func NewMatrixFromRows[T Number](data ...[]T) Matrix[T] {
 }
 
 // 实数矩阵
-type Matrix[T Number] struct {
+type Matrix[T RawNumber] struct {
 	data [][]T // 二维矩阵，是行的数组
 	rows int   // 行数
 	cols int   // 列数

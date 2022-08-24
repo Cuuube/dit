@@ -1,12 +1,25 @@
 package mathletics
 
-type INumber interface {
-	Add(INumber) INumber
-	Minus(INumber) INumber
-	Multi(INumber) INumber
-	Divide(INumber) INumber
+type Number[T RawNumber] struct {
+	rawNumber T
 }
 
-type Number interface {
-	int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64 | float32 | float64
+func (num Number[T]) Value() T {
+	return num.rawNumber
+}
+
+func (num Number[T]) Add(arg Number[T]) Number[T] {
+	return Number[T]{rawNumber: num.rawNumber + arg.Value()}
+}
+
+func (num Number[T]) Minus(arg Number[T]) Number[T] {
+	return Number[T]{rawNumber: num.rawNumber - arg.Value()}
+}
+
+func (num Number[T]) Multi(arg Number[T]) Number[T] {
+	return Number[T]{rawNumber: num.rawNumber * arg.Value()}
+}
+
+func (num Number[T]) Divide(arg Number[T]) Number[T] {
+	return Number[T]{rawNumber: num.rawNumber / arg.Value()}
 }

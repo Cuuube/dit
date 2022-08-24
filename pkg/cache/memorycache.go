@@ -3,9 +3,12 @@ package cache
 import (
 	"context"
 	"errors"
-	"fmt"
 	"sync"
 	"time"
+)
+
+const (
+	NeverExpiredTime = -1
 )
 
 var ErrNotFound = errors.New("not found")
@@ -19,23 +22,32 @@ type memoryValue struct {
 	next *memoryValue
 }
 
+var _ Cache = (*Memory)(nil)
+
+// 创建内存缓存
+func NewMemoryCache(ctx context.Context) *Memory {
+	cache := Memory{}
+	cache.Init(ctx)
+	return &cache
+}
+
+// 内存缓存
 type Memory struct {
 	data       map[string]*memoryValue
 	dataRWLock sync.RWMutex
 
-	// quickExpiredLinkedList *memoryValue
-	// slowExpiredLinkedList  *memoryValue
 	expiredLinkedList *memoryValue
-	expiredLock       sync.RWMutex
+	expiredLock       sync.Mutex
 }
 
-func (cache *Memory) startExpiredCheck(ctx context.Context) {
-	fmt.Println("启动过期检查！")
-	i := 1
+// 开启过期循环检查
+func (cache *Memory) startExpiredCheckLoop(ctx context.Context) {
+	// fmt.Println("启动过期检查！")
+	// i := 1
 	ticker := time.NewTicker(time.Second)
 	for range ticker.C {
-		fmt.Println("检测次数：", i)
-		i++
+		// fmt.Println("检测次数：", i)
+		// i++
 
 		node := cache.expiredLinkedList.next
 		for node != nil {
@@ -44,25 +56,25 @@ func (cache *Memory) startExpiredCheck(ctx context.Context) {
 
 			now := time.Now().UnixMilli()
 			if now > cur.expiredtime {
-				fmt.Printf("监测到过期key:%s, 过期时间：%d, cur time：%d\n", cur.key, cur.expiredtime, now)
-				cur.expiredtime = -1
+				// fmt.Printf("监测到过期key:%s, 过期时间：%d, cur time：%d\n", cur.key, cur.expiredtime, now)
+				cur.expiredtime = NeverExpiredTime
 				cache.simpleDel(ctx, cur)
 			}
 		}
 	}
 }
 
+// 初始化
 func (cache *Memory) Init(ctx context.Context) error {
 	cache.data = map[string]*memoryValue{}
-	// cache.quickExpiredLinkedList = &memoryValue{expiredtime: 999999999999}
-	// cache.slowExpiredLinkedList = &memoryValue{expiredtime: 999999999999}
-	cache.expiredLinkedList = &memoryValue{expiredtime: -1}
+	cache.expiredLinkedList = &memoryValue{expiredtime: NeverExpiredTime}
 
-	go cache.startExpiredCheck(ctx)
+	go cache.startExpiredCheckLoop(ctx)
 
 	return nil
 }
 
+// 获取耽搁元素
 func (cache *Memory) Get(ctx context.Context, key string) (interface{}, error) {
 	v, found := cache.simpleGet(ctx, key)
 	if !found {
@@ -72,7 +84,7 @@ func (cache *Memory) Get(ctx context.Context, key string) (interface{}, error) {
 	// 鉴别是否过期
 	now := time.Now().UnixMilli()
 	if v.expiredtime > 0 && now > v.expiredtime {
-		fmt.Println("已经过期：", key, v.expiredtime, now)
+		// fmt.Println("已经过期：", key, v.expiredtime, now)
 		// 如果过期，执行回收
 		cache.simpleDel(ctx, v)
 		return nil, ErrNotFound
@@ -80,23 +92,25 @@ func (cache *Memory) Get(ctx context.Context, key string) (interface{}, error) {
 	return v.value, nil
 }
 
+// 设置单个元素
 func (cache *Memory) Set(ctx context.Context, key string, value interface{}) error {
 	v, found := cache.simpleGet(ctx, key)
 	if !found {
 		v = &memoryValue{key: key}
 	}
 	v.value = value
-	v.expiredtime = -1
+	v.expiredtime = NeverExpiredTime
 	cache.simpleSet(ctx, key, v)
 	cache.updateExpiredLinkedList(v)
 	return nil
 }
 
+// 设置元素，并且设置过期秒数
 func (cache *Memory) SetEx(ctx context.Context, key string, value interface{}, expiredSeconds int) error {
 	expiredTime := time.Now().Add(time.Second * time.Duration(expiredSeconds)).UnixMilli()
 
 	if expiredSeconds < 0 {
-		expiredTime = -1
+		expiredTime = NeverExpiredTime
 	}
 
 	v, found := cache.simpleGet(ctx, key)
@@ -110,6 +124,7 @@ func (cache *Memory) SetEx(ctx context.Context, key string, value interface{}, e
 	return nil
 }
 
+// 移除单个元素
 func (cache *Memory) Del(ctx context.Context, key string) error {
 	v, found := cache.simpleGet(ctx, key)
 	if !found {
@@ -120,6 +135,7 @@ func (cache *Memory) Del(ctx context.Context, key string) error {
 	return nil
 }
 
+// map里读取单个元素
 func (cache *Memory) simpleGet(ctx context.Context, key string) (*memoryValue, bool) {
 	cache.dataRWLock.RLock()
 	defer cache.dataRWLock.RUnlock()
@@ -128,6 +144,7 @@ func (cache *Memory) simpleGet(ctx context.Context, key string) (*memoryValue, b
 	return v, found
 }
 
+// map里设置单个元素
 func (cache *Memory) simpleSet(ctx context.Context, key string, v *memoryValue) {
 	cache.dataRWLock.Lock()
 	defer cache.dataRWLock.Unlock()
@@ -135,6 +152,7 @@ func (cache *Memory) simpleSet(ctx context.Context, key string, v *memoryValue) 
 	cache.data[key] = v
 }
 
+// map里删除单个元素
 func (cache *Memory) simpleDel(ctx context.Context, v *memoryValue) error {
 	// 加锁
 	cache.dataRWLock.Lock()
@@ -147,6 +165,7 @@ func (cache *Memory) simpleDel(ctx context.Context, v *memoryValue) error {
 	return nil
 }
 
+// 更新当前元素在过期链表里的状态
 func (cache *Memory) updateExpiredLinkedList(v *memoryValue) {
 	cache.expiredLock.Lock()
 	defer cache.expiredLock.Unlock()
@@ -168,6 +187,7 @@ func (cache *Memory) updateExpiredLinkedList(v *memoryValue) {
 	appendToLinkedList(v, cache.expiredLinkedList)
 }
 
+// 插入链表颈部
 func appendToLinkedList(v *memoryValue, linkedListHead *memoryValue) {
 	temp := linkedListHead.next
 	linkedListHead.next = v

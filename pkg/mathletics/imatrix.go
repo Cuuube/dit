@@ -7,7 +7,7 @@ var (
 )
 
 // 矩阵 https://baike.baidu.com/item/%E7%9F%A9%E9%98%B5/18069
-type IMatrix[T Number] interface {
+type IMatrix[T RawNumber] interface {
 	Cols() int                            // 列数
 	Rows() int                            // 行数
 	Get(int, int) T                       // 获取值
