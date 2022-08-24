@@ -1,18 +1,28 @@
 package coll
 
-// type Set[T int | int8 | int16 | int32 | int64 | uint | uint8 | uint16 | uint32 | uint64 | string | bool | uintptr | unsafe.Pointer | struct{}] map[T]struct{}
-// type Set[T any] map[string]T
+type empty struct{}
 
-// func (set *Set[T]) Add(v T) {
-// 	(*set)[set.hash(v)] = v
-// }
+var _ Collection[string] = (*Set[string])(nil)
 
-// func (set *Set[T]) Contains(v T) bool {
-// 	_, found := (*set)[set.hash(v)]
-// 	return found
-// }
+type Set[T DictKeyable] map[T]struct{}
 
-// func (set *Set[T]) hash(v T) string {
+func (set *Set[T]) Len() int {
+	s := *set
+	return len(s)
+}
 
-// 	return found
-// }
+func (set *Set[T]) Append(v T) {
+	s := *set
+	s[v] = empty{}
+}
+
+func (set *Set[T]) Contains(v T) bool {
+	s := *set
+	_, found := s[v]
+	return found
+}
+
+func (set *Set[T]) Remove(v T) {
+	s := *set
+	delete(s, v)
+}

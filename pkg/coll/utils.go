@@ -116,7 +116,32 @@ func Reduce[argType any](args []argType, exec func(sum, next argType) argType) a
 	return sum
 }
 
-// IgnoreErr 只拿返回值，忽略error
-func IgnoreErr[argType any](arg argType, err error) argType {
-	return arg
+// 拼接多个collection
+func ConcatList[T any](lists ...[]T) []T {
+	ret := make([]T, 0)
+	for i := range lists {
+		li := lists[i]
+		if len(li) == 0 {
+			continue
+		}
+		for j := range li {
+			ret = append(ret, li[j])
+		}
+	}
+	return ret
+}
+
+// 拼接多个collection
+func ConcatMap[T DictKeyable](maps ...map[T]any) map[T]any {
+	ret := make(map[T]any, 0)
+	for i := range maps {
+		ma := maps[i]
+		if len(ma) == 0 {
+			continue
+		}
+		for j := range ma {
+			ret[j] = ma[j]
+		}
+	}
+	return ret
 }

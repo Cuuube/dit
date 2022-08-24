@@ -1,9 +1,10 @@
 package coll
 
 import (
-	"fmt"
 	"reflect"
 )
+
+var _ Collection[any] = (*List[any])(nil)
 
 // List 动态列表包装
 type List[T any] []T
@@ -25,6 +26,30 @@ func (li *List[T]) Pop() T {
 	return v
 }
 
+// 获取元素下标
+func (li *List[T]) IndexOf(v T) int {
+	for i := 0; i < li.Len(); i++ {
+		if reflect.DeepEqual(li.Get(i), v) {
+			return i
+		}
+	}
+	return -1
+}
+
+// 是否包含某元素
+func (li *List[T]) Contains(v T) bool {
+	return li.IndexOf(v) >= 0
+}
+
+// 删除固定元素
+func (li *List[T]) Remove(v T) {
+	idx := li.IndexOf(v)
+	if idx >= 0 {
+		l := *li
+		(*li) = ConcatList(l[0:idx], l[idx+1:])
+	}
+}
+
 // 头部弹出
 func (li *List[T]) Shift() T {
 	v := (*li)[0]
@@ -35,7 +60,7 @@ func (li *List[T]) Shift() T {
 // 头部插入
 func (li *List[T]) Prepend(v T) {
 	li.Append(v)
-	for i := li.Len() - 1; i > 1; i-- {
+	for i := li.Len() - 1; i >= 1; i-- {
 		li.Swap(i-1, i)
 	}
 }
@@ -55,44 +80,54 @@ func (li *List[T]) Swap(i, j int) {
 	(*li)[i], (*li)[j] = (*li)[j], (*li)[i]
 }
 
+func (li *List[T]) SortBy(lessfunc func(i, j T) bool) {
+	// TODO
+}
+
 // 是否小于
 func (li *List[T]) Less(i, j int) bool {
 	len := li.Len()
 	if i >= len || j >= len {
 		return false
 	}
+
 	iItem := (*li)[i]
 	jItem := (*li)[j]
 	iItemType := reflect.TypeOf(iItem)
-	// jItemType := reflect.TypeOf(jItem)
 	iItemValue := reflect.ValueOf(iItem)
 	jItemValue := reflect.ValueOf(jItem)
-	ptrFlg := false
-Loop:
-	switch iItemType.Kind() {
-	// 数字按照值比大小
-	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return iItemValue.Int() < jItemValue.Int()
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		return iItemValue.Uint() < jItemValue.Uint()
-	case reflect.Float32, reflect.Float64:
-		return iItemValue.Float() < jItemValue.Float()
-	// 字符串按照本身大小
-	case reflect.String:
-		return iItemValue.String() < jItemValue.String()
-	// 指针按照内部的值
-	case reflect.Pointer:
-		// 暂不支持寻址多层指针
-		if ptrFlg {
-			fmt.Println("暂不支持寻址多层指针")
+	// ptrFlg := false // 指针允许寻址一次
+
+	for {
+		switch iItemType.Kind() {
+
+		// 数字按照值比大小
+		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+			return iItemValue.Int() < jItemValue.Int()
+		case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+			return iItemValue.Uint() < jItemValue.Uint()
+		case reflect.Float32, reflect.Float64:
+			return iItemValue.Float() < jItemValue.Float()
+
+		// 字符串按照本身大小
+		case reflect.String:
+			return iItemValue.String() < jItemValue.String()
+
+		// 指针按照内部的值
+		case reflect.Pointer:
+			// // 暂不支持寻址多层指针
+			// if ptrFlg {
+			// 	fmt.Println("暂不支持寻址多层指针")
+			// 	return false
+			// }
+			iItemType = iItemType.Elem()
+			iItemValue = iItemValue.Elem()
+			jItemValue = jItemValue.Elem()
+			// ptrFlg = true
+
+		default:
+			// 其他的结构体、数组、函数等都不执行默认排序
 			return false
 		}
-		iItemType = iItemType.Elem()
-		iItemValue = reflect.ValueOf(iItem).Elem()
-		jItemValue = reflect.ValueOf(jItem).Elem()
-		ptrFlg = true
-		goto Loop
 	}
-	// 其他的结构体、数组、函数等全部不可默认排序
-	return false
 }

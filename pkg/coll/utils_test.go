@@ -1,12 +1,9 @@
 package coll
 
 import (
-	"errors"
 	"fmt"
-	"strconv"
 	"strings"
 	"testing"
-	"time"
 )
 
 type testStruct struct {
@@ -150,48 +147,4 @@ func TestReduce(t *testing.T) {
 		sum.Age += next.Age
 		return sum
 	}))
-}
-
-func TestIgnoreErr(t *testing.T) {
-	testFunc := func() (int, error) {
-		return 111, errors.New("err!")
-	}
-	fmt.Println(testFunc())
-	fmt.Println(IgnoreErr(testFunc()))
-}
-
-func TestAsyncExec(t *testing.T) {
-	args := make([]string, 100)
-	for i := 0; i < 100; i++ {
-		args[i] = strconv.Itoa(i)
-	}
-	AsyncExec(17, args, func(v string) {
-		time.Sleep(time.Second)
-		fmt.Println(v)
-	})
-}
-
-func TestBatchExec(t *testing.T) {
-	size := 100
-	args := make([]string, size)
-	for i := 0; i < size; i++ {
-		args[i] = strconv.Itoa(i)
-	}
-	BatchExec(args, 17, func(v []string) {
-		// time.Sleep(time.Second)
-		fmt.Println(v[0], "~", v[len(v)-1])
-	})
-}
-
-func TestBatchAsyncExec(t *testing.T) {
-	size := 1000
-	args := make([]string, size)
-	for i := 0; i < size; i++ {
-		args[i] = strconv.Itoa(i)
-	}
-	AsyncBatchExec(5, args, 142, func(v []string) {
-		// time.Sleep(time.Second)
-		fmt.Println(v[0], "~", v[len(v)-1])
-		time.Sleep(time.Second)
-	})
 }
