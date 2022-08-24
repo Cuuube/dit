@@ -43,7 +43,7 @@ func ForeachBatch[T any](args []T, batchSize int, exec func(int, []T)) {
 }
 
 // AsyncForeachBatch 分批异步执行
-func AsyncForeachBatch[T any](worker int, args []T, batchSize int, exec func([]T)) {
+func AsyncForeachBatch[T any](worker int, args []T, batchSize int, exec func(int, []T)) {
 	if len(args) <= 0 {
 		return
 	}
@@ -63,15 +63,15 @@ func AsyncForeachBatch[T any](worker int, args []T, batchSize int, exec func([]T
 		wg.Add(step)
 
 		ch <- struct{}{}
-		go func(v []T) {
+		go func(startIdx int, v []T) {
 			cnt := len(v)
-			exec(v)
+			exec(startIdx, v)
 			// 标记任务完成数
 			for i := 0; i < cnt; i++ {
 				wg.Done()
 			}
 			<-ch // 释放池
-		}(args[startIdx : startIdx+step])
+		}(startIdx, args[startIdx:startIdx+step])
 
 		startIdx += step
 	}

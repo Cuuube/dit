@@ -22,9 +22,9 @@ func TestAsyncForeach(t *testing.T) {
 	for i := 0; i < 100; i++ {
 		args[i] = strconv.Itoa(i)
 	}
-	AsyncForeach(17, args, func(_ int, v string) {
+	AsyncForeach(17, args, func(idx int, v string) {
 		time.Sleep(time.Second)
-		fmt.Println(v)
+		fmt.Println(idx, v)
 	})
 }
 
@@ -34,9 +34,9 @@ func TestForeachBatch(t *testing.T) {
 	for i := 0; i < size; i++ {
 		args[i] = strconv.Itoa(i)
 	}
-	ForeachBatch(args, 17, func(_ int, v []string) {
+	ForeachBatch(args, 17, func(idx int, v []string) {
 		// time.Sleep(time.Second)
-		fmt.Println(v[0], "~", v[len(v)-1])
+		fmt.Println(idx, v[0], "~", v[len(v)-1])
 	})
 }
 
@@ -46,9 +46,9 @@ func TestBatchAsyncForeach(t *testing.T) {
 	for i := 0; i < size; i++ {
 		args[i] = strconv.Itoa(i)
 	}
-	AsyncForeachBatch(5, args, 142, func(v []string) {
+	AsyncForeachBatch(5, args, 142, func(idx int, v []string) {
 		// time.Sleep(time.Second)
-		fmt.Println(v[0], "~", v[len(v)-1])
+		fmt.Println(idx, v[0], "~", v[len(v)-1])
 		time.Sleep(time.Second)
 	})
 }
