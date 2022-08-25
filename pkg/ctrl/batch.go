@@ -80,7 +80,7 @@ func AsyncForeachBatch[T any](worker int, args []T, batchSize int, exec func(int
 	wg.Wait()
 }
 
-// AsyncExec 将参数分批执行。串行执行
+// AsyncExec 并行执行
 func AsyncExec(worker int, execFuncs ...func() error) []error {
 	errs := make([]error, len(execFuncs))
 	if len(execFuncs) <= 0 {
