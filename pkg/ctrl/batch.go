@@ -1,6 +1,7 @@
 package ctrl
 
 import (
+	"fmt"
 	"sync"
 )
 
@@ -106,4 +107,76 @@ func AsyncExec(worker int, execFuncs ...func() error) []error {
 	wg.Wait()
 
 	return errs
+}
+
+// AsyncExecWithCancel 将参数分批执行。串行执行
+func AsyncExecWithCancel(worker int, execFuncs ...func() error) (chan error, func()) {
+	errChan := make(chan error, len(execFuncs))
+	if len(execFuncs) <= 0 {
+		return errChan, func() {}
+	}
+
+	cancel := make(chan struct{})
+	cancelFunc := func() {
+		cancel <- struct{}{}
+		close(cancel)
+	}
+
+	ch := make(chan struct{}, worker)
+	defer close(ch)
+
+	wg := sync.WaitGroup{}
+	wg.Add(len(execFuncs))
+
+	// 并发执行
+	for i := range execFuncs {
+		select {
+
+		// 如果接收到正常信号，继续执行
+		case ch <- struct{}{}:
+			go func(i int) {
+				exec := execFuncs[i]
+
+				defer func() {
+					wg.Done() // 标记任务完成数
+					<-ch      // 释放池
+				}()
+
+				// 并发接收返回值
+				ret := make(chan error)
+				defer close(ret)
+
+				// 执行任务
+				go func() {
+					defer func() {
+						recover()
+					}()
+					ret <- exec()
+				}()
+
+				// 执行返回，或者被取消即中断
+				select {
+				case e := <-ret:
+					// 正确返回
+					errChan <- e
+
+				case _, ok := <-cancel:
+					// 接到取消信号时，强制返回
+
+					if !ok {
+						return
+					}
+				}
+			}(i)
+
+			// 如果接收到取消信号，取消掉之后所有执行
+		case canceled, ok := <-cancel:
+			fmt.Println(canceled, ok)
+			break
+		}
+	}
+	// 任务全部结束后终止
+	wg.Wait()
+
+	return errChan, cancelFunc
 }

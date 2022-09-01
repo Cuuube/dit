@@ -78,3 +78,34 @@ func TestAsyncExec(t *testing.T) {
 	errs := AsyncExec(17, execs...)
 	fmt.Println(errs)
 }
+
+func TestAsyncExecWithCancel(t *testing.T) {
+	execs := make([]func() error, 100)
+	for i := 0; i <= 100; i++ {
+		idx := i
+		execs = append(execs, func() error {
+			fmt.Println("start", idx)
+			time.Sleep(time.Second * time.Duration(i))
+			fmt.Println("end", idx)
+			return errors.New(fmt.Sprint(i))
+		})
+	}
+
+	erChan, cancel := AsyncExecWithCancel(2, execs...)
+	defer close(erChan)
+	for {
+		select {
+		case er, ok := <-erChan:
+			fmt.Println(er, ok)
+
+			if !ok {
+				return
+			}
+		}
+		go func() {
+			time.Sleep(3)
+			cancel()
+		}()
+	}
+
+}
