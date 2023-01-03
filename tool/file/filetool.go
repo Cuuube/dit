@@ -79,7 +79,7 @@ func (tool *BaseFileTool) Move(args ...string) {
 
 	cli.PrintDict(nameWillChangeMap, "源文件", "目标文件")
 	cli.Printf("需要更改%d个文件，是否继续？y/N\n", len(nameWillChangeMap))
-	if strings.ToLower(cli.Scan()) != "y" {
+	if strings.ToLower(cli.ReadInput()) != "y" {
 		cli.Println("操作终止")
 		return
 	}

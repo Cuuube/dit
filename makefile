@@ -14,3 +14,9 @@ cmd:
 	echo "$(TARGET_DIR)"
 	go build -o $(TARGET_DIR)/dit $(CURRENT_DIR)/cmd/dit/main.go
 	echo "[SUCCESS] make cmd OK!"
+
+mark:
+	echo "$(TARGET_DIR)"
+	go build -o $(TARGET_DIR)/mark $(CURRENT_DIR)/cmd/mark/main.go
+	# sqlite3 $(TARGET_DIR)/mark_sqlite.db
+	echo "[SUCCESS] make cmd OK!"

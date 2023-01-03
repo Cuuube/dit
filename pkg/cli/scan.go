@@ -11,3 +11,7 @@ func Scan() string {
 	}
 	return inp
 }
+
+func ReadInput() string {
+	return Scan()
+}
