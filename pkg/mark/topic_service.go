@@ -40,6 +40,11 @@ func (srv *SQLTopicService) GetTopicByTopicKey(key string) (*Topic, error) {
 }
 
 func (srv *SQLTopicService) CreateTopic(key string, name string, typ string) error {
+	old, _ := srv.GetTopicByTopicKey(key)
+	if old.Key != "" {
+		return errors.New("话题已存在")
+	}
+
 	now := time.Now()
 	t := Topic{
 		Key:        key,

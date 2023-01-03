@@ -35,9 +35,9 @@ func main() {
 		}
 		table := make([][]string, len(topics))
 		for _, t := range topics {
-			table = append(table, []string{t.Name, t.Key})
+			table = append(table, []string{t.Key, t.Name, t.Type})
 		}
-		cli.PrintTableWithHeader([]string{"Topic Name", "Topic Key"}, table)
+		cli.PrintTableWithHeader([]string{"Key", "Topic Name", "Type"}, table)
 		return
 
 	// 创建Topic
@@ -48,7 +48,8 @@ func main() {
 		}
 		err := goCreateTopic(srv, topicKey)
 		if err != nil {
-			cli.Println("删除topic失败：", err)
+			cli.Println("操作失败：", err)
+			return
 		}
 		cli.Println("创建成功！")
 		return
@@ -62,7 +63,7 @@ func main() {
 		topicKey = cleanString(args[2])
 		err := srv.DeleteTopic(topicKey)
 		if err != nil {
-			cli.Println("删除topic失败：", err)
+			cli.Println("删除话题失败：", err)
 		}
 		return
 
@@ -70,11 +71,8 @@ func main() {
 		// 查找topic合法性
 		topic, err = srv.GetTopicByTopicKey(topicKey)
 		if err != nil || topic.Key == "" {
-			err = goCreateTopic(srv, topicKey)
-			if err != nil {
-				cli.Println("操作终止")
-				return
-			}
+			cli.Println("话题不存在，操作终止")
+			return
 		}
 	}
 
@@ -158,18 +156,29 @@ var (
 
 func goCreateTopic(srv mark.MarkService, topicKey string) error {
 	for topicKey == "" {
-		cli.Println("请键入【topicid】：")
+		cli.Println("请键入【话题key】(topicKey)：")
+		cli.Printf("> ")
 		topicKey = cli.ReadInput()
 		if topicKey == "n" {
 			return errors.New("操作终止")
 		}
 	}
-	cli.Println("请键入【名称】：")
+
+	// 检测是否存在
+	t, _ := srv.GetTopicByTopicKey(topicKey)
+	if t.Key != "" {
+		return errors.New("话题已存在")
+	}
+
+	// 用户输入话题说明
+	cli.Println("请键入【话题说明】：")
+	cli.Printf("> ")
 	name := strings.ToLower(cli.ReadInput())
 	if name == "" || name == "n" {
 		return errors.New("操作终止")
 	}
-	cli.Println("请输入Topic类型：\n1.自由输入（需要手动指定key和value）\n2.每日限一条（不需要指定key）\n3.每分钟限一条（不需要指定key）\n4.每秒限一条（不需要指定key）")
+	cli.Println("请输入Topic类型：[数字1-4]\n  1. 自由输入（需要手动指定key和value）\n  2. 每日限一条（不需要指定key）\n  3. 每分钟限一条（不需要指定key）\n  4. 每秒限一条（不需要指定key）")
+	cli.Printf("> ")
 	typInp := strings.ToLower(cli.ReadInput())
 	typ, valid := TopicTypeSelectMap[typInp]
 	if !valid {
