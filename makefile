@@ -20,3 +20,9 @@ mark:
 	go build -o $(TARGET_DIR)/mark $(CURRENT_DIR)/cmd/mark/main.go
 	# sqlite3 $(TARGET_DIR)/mark_sqlite.db
 	echo "[SUCCESS] make cmd OK!"
+
+initmark:
+	echo "$(TARGET_DIR)"
+	go build -o $(TARGET_DIR)/mark $(CURRENT_DIR)/cmd/mark/main.go
+	sqlite3 $(TARGET_DIR)/mark_sqlite.db 'create table topic (key text primary_key,name text,type text,create_time text,update_time text);create table content (id integer primary_key AUTO_INCREMENT,topic text,data text,key text, create_time text,update_time text);'
+	echo "[SUCCESS] make cmd OK!"
