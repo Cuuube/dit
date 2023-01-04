@@ -4,6 +4,7 @@ go 1.18
 
 require (
 	github.com/olekukonko/tablewriter v0.0.5
+	golang.org/x/text v0.5.0
 	gorm.io/driver/sqlite v1.4.3
 	gorm.io/gorm v1.24.2
 )

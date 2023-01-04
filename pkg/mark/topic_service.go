@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Cuuube/dit/pkg/dateutil"
+	"github.com/Cuuube/dit/pkg/utils/dateutil"
 	"gorm.io/gorm"
 )
 

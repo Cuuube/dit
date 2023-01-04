@@ -10,6 +10,11 @@ const (
 	TimeFormat        = "15:04:05"
 )
 
+// 自定义
+func FormatBy(date time.Time, format string) string {
+	return date.Format(format)
+}
+
 func FormatDatetime(t time.Time) string {
 	return t.Local().Format(DatetimeFormat)
 }

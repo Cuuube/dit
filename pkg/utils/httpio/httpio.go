@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/Cuuube/dit/pkg/fileio"
+	"github.com/Cuuube/dit/pkg/utils/fileio"
 )
 
 // Read一个页面，返回body的reader。注意需要手动close掉

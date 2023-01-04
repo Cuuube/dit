@@ -5,8 +5,8 @@ import (
 	"strings"
 
 	"github.com/Cuuube/dit/pkg/cli"
-	"github.com/Cuuube/dit/pkg/fileio"
-	"github.com/Cuuube/dit/pkg/httpio"
+	"github.com/Cuuube/dit/pkg/utils/fileio"
+	"github.com/Cuuube/dit/pkg/utils/httpio"
 )
 
 // FileTool 系统工具
