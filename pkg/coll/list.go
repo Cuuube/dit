@@ -2,6 +2,7 @@ package coll
 
 import (
 	"reflect"
+	"sort"
 )
 
 var _ Collection[any] = (*List[any])(nil)
@@ -80,8 +81,8 @@ func (li *List[T]) Swap(i, j int) {
 	(*li)[i], (*li)[j] = (*li)[j], (*li)[i]
 }
 
-func (li *List[T]) SortBy(lessfunc func(i, j T) bool) {
-	// TODO
+func (li *List[T]) SortBy(lessfunc func(i, j int) bool) {
+	sort.Slice((*li), lessfunc)
 }
 
 // 是否小于
@@ -115,15 +116,9 @@ func (li *List[T]) Less(i, j int) bool {
 
 		// 指针按照内部的值
 		case reflect.Pointer:
-			// // 暂不支持寻址多层指针
-			// if ptrFlg {
-			// 	fmt.Println("暂不支持寻址多层指针")
-			// 	return false
-			// }
 			iItemType = iItemType.Elem()
 			iItemValue = iItemValue.Elem()
 			jItemValue = jItemValue.Elem()
-			// ptrFlg = true
 
 		default:
 			// 其他的结构体、数组、函数等都不执行默认排序
