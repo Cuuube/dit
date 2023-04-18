@@ -6,7 +6,7 @@ import (
 )
 
 func TestLoading(t *testing.T) {
-	var loading Loading = SimpleLoading("Loading")
+	var loading Loading = NewSimpleLoading("Loading", WithFrameDuration(time.Second/10))
 	go loading.Play()
 	go loading.Play()
 	go loading.Play()

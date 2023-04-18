@@ -12,6 +12,15 @@ const (
 	StyleRevertColor = "\033[7m"
 	StyleInvisible   = "\033[8m"
 
+	ColorCodeBlack   = "0"
+	ColorCodeRed     = "1"
+	ColorCodeGreen   = "2"
+	ColorCodeYellow  = "3"
+	ColorCodeBlue    = "4"
+	ColorCodeMagenta = "5"
+	ColorCodeCyan    = "6"
+	ColorCodeWhite   = "7"
+
 	ColorBlack   = "\033[30m"
 	ColorRed     = "\033[31m"
 	ColorGreen   = "\033[32m"
@@ -29,6 +38,10 @@ const (
 	BgColorMagenta = "\033[45m"
 	BgColorCyan    = "\033[46m"
 	BgColorWhite   = "\033[47m"
+
+	ColorFormat     = "\033[3%dm"
+	BgColorFormat   = "\033[4%dm"
+	FullColorFormat = "\033[3%d;4%dm"
 
 	CursorUpLine1     = "\033[1A"
 	CursorUpLine2     = "\033[2A"

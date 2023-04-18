@@ -17,19 +17,26 @@ const (
 	SigRunning
 )
 
-func SimpleLoading(text string) Loading {
-	style := NewTextWithDotLoading(text)
+func NewSimpleLoading(text string, confFn ...LoadingConfFn) Loading {
+	animation := NewTextWithDotLoading(text)
 
-	return NewLoadingWithStyle(style)
+	return NewLoadingWith(animation, confFn...)
 }
 
-func NewLoadingWithStyle(style LoadingAnimation) Loading {
-	sig := atomic.Value{}
-	sig.Store(SigNotRunning)
+func NewLoadingWith(animation LoadingAnimation, confFn ...LoadingConfFn) Loading {
+	signal := atomic.Value{}
+	signal.Store(SigNotRunning)
+
+	conf := DefaultLoadingConf()
+	for _, fn := range confFn {
+		fn(conf)
+	}
 
 	return &LoadingFrame{
-		sig:   sig,
-		style: style,
+		signal:    signal,
+		animation: animation,
+
+		conf: conf,
 	}
 }
 
@@ -37,32 +44,64 @@ var _ (Loading) = (*LoadingFrame)(nil)
 
 // LoadingFrame 加载动画控制框架
 type LoadingFrame struct {
-	sig   atomic.Value
-	style LoadingAnimation
+	signal    atomic.Value
+	animation LoadingAnimation
+
+	conf *LoadingConf
 }
 
 func (obj *LoadingFrame) Play() {
 	// 原子锁，拒掉多线程执行
-	ok := obj.sig.CompareAndSwap(SigNotRunning, SigRunning)
+	ok := obj.signal.CompareAndSwap(SigNotRunning, SigRunning)
 	if !ok {
 		return
 	}
 
-	obj.style.Print()
-	for range time.NewTicker(time.Second).C {
-		if obj.sig.Load() != SigRunning { // stoped
+	obj.animation.Print()
+	for range time.NewTicker(obj.conf.frameDuration).C {
+		if obj.signal.Load() != SigRunning { // stoped
 			return
 		}
-		obj.style.Clear()
-		obj.style.Print()
+		obj.animation.Clear()
+		obj.animation.Print()
 	}
 }
 
 func (obj *LoadingFrame) Stop() {
-	obj.sig.Store(SigNotRunning)
-	obj.style.Clear()
-	obj.style.Reset()
+	obj.signal.Store(SigNotRunning)
+	if obj.conf.clearAfterStop {
+		obj.animation.Clear()
+	}
+	obj.animation.Reset()
 }
 
 // func (obj *LoadingFrame) Pause() {
 // }
+
+// --- loading conf ---
+
+type LoadingConfFn func(*LoadingConf)
+
+type LoadingConf struct {
+	clearAfterStop bool
+	frameDuration  time.Duration
+}
+
+func DefaultLoadingConf() *LoadingConf {
+	return &LoadingConf{
+		clearAfterStop: true,
+		frameDuration:  time.Second,
+	}
+}
+
+func WithClearAfterStop(inp bool) LoadingConfFn {
+	return func(lc *LoadingConf) {
+		lc.clearAfterStop = inp
+	}
+}
+
+func WithFrameDuration(inp time.Duration) LoadingConfFn {
+	return func(lc *LoadingConf) {
+		lc.frameDuration = inp
+	}
+}
