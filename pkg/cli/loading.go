@@ -13,8 +13,9 @@ type Loading interface {
 }
 
 const (
-	SigNotRunning uint8 = iota
+	SigNotInited uint8 = iota
 	SigRunning
+	SigStopped
 )
 
 func NewSimpleLoading(text string, confFn ...LoadingConfFn) Loading {
@@ -25,7 +26,7 @@ func NewSimpleLoading(text string, confFn ...LoadingConfFn) Loading {
 
 func NewLoadingWith(animation LoadingAnimation, confFn ...LoadingConfFn) Loading {
 	signal := atomic.Value{}
-	signal.Store(SigNotRunning)
+	signal.Store(SigNotInited)
 
 	conf := DefaultLoadingConf()
 	for _, fn := range confFn {
@@ -52,7 +53,7 @@ type LoadingFrame struct {
 
 func (obj *LoadingFrame) Play() {
 	// 原子锁，拒掉多线程执行
-	ok := obj.signal.CompareAndSwap(SigNotRunning, SigRunning)
+	ok := obj.signal.CompareAndSwap(SigNotInited, SigRunning)
 	if !ok {
 		return
 	}
@@ -68,7 +69,7 @@ func (obj *LoadingFrame) Play() {
 }
 
 func (obj *LoadingFrame) Stop() {
-	obj.signal.Store(SigNotRunning)
+	obj.signal.Store(SigStopped)
 	if obj.conf.clearAfterStop {
 		obj.animation.Clear()
 	}
